@@ -43,10 +43,8 @@ export default function validateRoleCreation(req: Request, res: Response, next: 
     if (!passwordPolicy.hasSpecialChar.test(Password))
         return res.status(400).json({ status: "error", message: "Password must contain at least one special character (e.g., !, @, #)." });
 
-    // Egyptian phone number validation
-    const phoneString = String(phoneNumber).trim();
 
-    if (phoneString.length !== 11) {
+    if (phoneNumber.length !== 11) {
         return res.status(400).json({ status: "error", message: "Phone number must be exactly 11 digits long for Egyptian mobiles." });
     }
 
