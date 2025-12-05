@@ -3,13 +3,14 @@
 import UserControllers from "../Controllers/UserControllers.ts";
 
 // import Middleware
-import CreationProcess from "../MIddlewares/CreationProcess.js"
+import RegisterUser from "../Middlewares/RegisterUser.ts"
+
 import express from "express";
 
 const router = express.Router();
 
                                         // Routes
-router.post('/register', CreationProcess,UserControllers.createUser);
+router.post('/register', RegisterUser,UserControllers.createUser);
 
 
 

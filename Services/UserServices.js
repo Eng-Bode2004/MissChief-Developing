@@ -1,5 +1,5 @@
 import UserSchema from "../Models/UserSchema.ts";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 
 
