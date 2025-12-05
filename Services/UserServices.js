@@ -24,7 +24,7 @@ class UserServices{
             }
 
             // Hash Password
-            const hashedPassword = bcrypt.hash(Password, 10);
+            const hashedPassword = await bcrypt.hash(Password, 10);
 
             // Create new User
             const newUser = await UserSchema.create({
