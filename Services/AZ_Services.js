@@ -1,6 +1,9 @@
 import AZ_Schema from "../Models/AZ_Schema.js";
 import inside from "point-in-polygon";
 import { getDistance } from "geolib";
+import "dotenv/config";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY ;
+const GEMINI_API_URL = process.env.GEMINI_API_URL;
 
 class AZ_Services {
 
@@ -114,35 +117,71 @@ class AZ_Services {
         }
 
         if (!matchedZone) {
+            // حساب أقرب منطقة
             let closestZone = null;
             let minDistance = Infinity;
 
             zones.forEach(zone => {
                 const avgLat = zone.polygon.reduce((sum, p) => sum + p.lat, 0) / zone.polygon.length;
                 const avgLng = zone.polygon.reduce((sum, p) => sum + p.lng, 0) / zone.polygon.length;
-
                 const distance = getDistance(
                     { latitude: lat, longitude: lng },
                     { latitude: avgLat, longitude: avgLng }
                 );
-
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestZone = zone;
                 }
             });
 
+            // استخدام AI لاقتراح المنطقة
+            const aiSuggestion = await this.getAISuggestion(lat, lng, closestZone);
+
             return {
                 insideZone: false,
                 suggestedZone: closestZone ? closestZone.name : null,
-                distanceToSuggestedZone_m: minDistance
+                distanceToSuggestedZone_m: minDistance,
+                aiSuggestion
             };
         }
 
-        return {
-            insideZone: true,
-            zone: matchedZone
-        };
+        return { insideZone: true, zone: matchedZone };
+    }
+
+    // AI SUGGESTION USING GOOGLE GEMINI
+    async getAISuggestion(lat, lng, closestZone) {
+        try {
+            const prompt = `
+            User location: lat=${lat}, lng=${lng}
+            Closest available zone: ${closestZone ? closestZone.name : "None"}
+            Suggest the best available zone for delivery and provide latitude and longitude. 
+            Format response as JSON with keys: suggestedZone, suggestedLat, suggestedLng, reason.
+            `;
+
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    prompt,
+                    temperature: 0.2,
+                    max_output_tokens: 300
+                })
+            });
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                const aiText = data.candidates[0].content;
+                try {
+                    return JSON.parse(aiText);
+                } catch (e) {
+                    return { message: aiText }; // fallback
+                }
+            }
+            return { message: "No suggestion from AI" };
+        } catch (error) {
+            console.error("AI suggestion error:", error.message);
+            return { message: "AI error" };
+        }
     }
 
 }

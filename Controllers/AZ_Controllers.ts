@@ -133,7 +133,6 @@ class AZ_Controllers {
             });
         }
     }
-
 }
 
 export default new AZ_Controllers();
