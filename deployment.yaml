@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anubis-role-service
+  labels:
+    app: anubis-role-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: anubis-role-service
+  template:
+    metadata:
+      labels:
+        app: anubis-role-service
+    spec:
+      containers:
+        - name: backend
+          image: 838205823983.dkr.ecr.eu-north-1.amazonaws.com/anubis-role-service:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGOURI
+              value: "mongodb+srv://Anubis-Gym-Username2004:9voWYMIoHJBENeGp@role-services.ct5bizh.mongodb.net/?appName=Role-Services"
