@@ -33,6 +33,13 @@ const UserSchema = new mongoose.Schema({
         ref:"Role",
     },
 
+    language:{
+        type:String,
+        enum:['en','ara'],
+        default: 'en',
+    }
+
+
 });
 
 export default mongoose.model('User', UserSchema);

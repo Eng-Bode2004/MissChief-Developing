@@ -3,6 +3,8 @@ import type {Request, Response, NextFunction} from "express";
 export default function validateRoleCreation(req: Request, res: Response, next: NextFunction) {
     const { username, phoneNumber, Password, confirm_Password } = req.body;
 
+
+    // Validate data existence
     if (!username) {
         return res.status(400).json({ message: "username is required", status: 400 });
     }
@@ -19,9 +21,14 @@ export default function validateRoleCreation(req: Request, res: Response, next: 
         return res.status(400).json({ status: "error", message: "Please confirm the password." });
     }
 
+
+    // Check if Passwords Matches
     if (Password !== confirm_Password) {
         return res.status(400).json({ status: "error", message: "Passwords do not match." });
     }
+
+
+    // Check strength of passwords
 
     // Password policy
     const passwordPolicy = {
@@ -33,25 +40,73 @@ export default function validateRoleCreation(req: Request, res: Response, next: 
     };
 
     if (Password.length < passwordPolicy.minLength)
-        return res.status(400).json({ status: "error", message: `Password must be at least ${passwordPolicy.minLength} characters long.` });
+        return res.status(400).json({
+            status: "error",
+            message: `Password must be at least ${passwordPolicy.minLength} characters long.`
+        });
+
+
     if (!passwordPolicy.hasUpperCase.test(Password))
-        return res.status(400).json({ status: "error", message: "Password must contain at least one uppercase letter." });
+        return res.status(400).json({
+            status: "error",
+            message: "Password must contain at least one uppercase letter."
+        });
+
+
     if (!passwordPolicy.hasLowerCase.test(Password))
-        return res.status(400).json({ status: "error", message: "Password must contain at least one lowercase letter." });
+        return res.status(400).json({
+            status: "error",
+            message: "Password must contain at least one lowercase letter."
+        });
+
+
     if (!passwordPolicy.hasNumber.test(Password))
-        return res.status(400).json({ status: "error", message: "Password must contain at least one number." });
+        return res.status(400).json({
+            status: "error",
+            message: "Password must contain at least one number."
+        });
+
+
     if (!passwordPolicy.hasSpecialChar.test(Password))
-        return res.status(400).json({ status: "error", message: "Password must contain at least one special character (e.g., !, @, #)." });
+        return res.status(400).json({
+            status: "error",
+            message: "Password must contain at least one special character (e.g., !, @, #)."
+        });
 
 
     if (phoneNumber.length !== 11) {
-        return res.status(400).json({ status: "error", message: "Phone number must be exactly 11 digits long for Egyptian mobiles." });
+        return res.status(400).json({
+            status: "error",
+            message: "Phone number must be exactly 11 digits long for Egyptian mobiles."
+        });
     }
 
-    const egyptianMobileRegex = /^(010|011|012|015)\d{8}$/;
-    if (!egyptianMobileRegex.test(phoneString)) {
-        return res.status(400).json({ status: "error", message: "Invalid Egyptian mobile number" });
+
+
+    // Validate Phone Number
+    if (phoneNumber) {
+        const phoneString = String(phoneNumber).trim();
+
+        // 1. Check for 11 digits
+        if (phoneString.length !== 11) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Phone number must be exactly 11 digits long for Egyptian mobiles.',
+            });
+        }
+
+        // 2. Check for starting prefixes (010, 011, 012, 015)
+        const egyptianMobileRegex = /^(010|011|012|015)\d{8}$/;
+
+        if (!egyptianMobileRegex.test(phoneString)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid Egyptian mobile number. Must start with 010, 011, 012, or 015.',
+            });
+        }
     }
+
+
 
     // Validate username
     const usernameRegex = /^[a-zA-Z0-9_.]+$/;
