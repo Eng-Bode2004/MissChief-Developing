@@ -29,6 +29,36 @@ class UserControllers {
         }
     }
 
+    async AssignRole(req:Request, res: Response) {
+        try {
+            const { RoleId } = req.body;
+            const { userId } = req.params;
+
+            const UserRole = await UserServices.AssignRole(userId, RoleId);
+
+            res.status(200).json({
+                status: "success",
+                message: "Role assigned successfully",
+                data: UserRole
+            });
+        } catch (error: unknown ) {
+
+            if (error instanceof Error) {
+                res.status(400).json({
+                    message: error.message,
+                    status: 400
+                });
+            } else {
+                res.status(400).json({
+                    message: "Unknown error occurred",
+                    status: 400
+                });
+            }
+
+
+        }
+    }
+
 
 
 }
