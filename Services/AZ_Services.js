@@ -106,7 +106,6 @@ class AZ_Services {
         const { lat, lng } = point;
         const zones = await AZ_Schema.find({ status: "active" });
 
-        // 1️⃣ تحقق إذا داخل أي منطقة
         let matchedZone = null;
         for (const zone of zones) {
             const polygonPoints = zone.polygon.map(p => [p.lat, p.lng]);
@@ -117,13 +116,10 @@ class AZ_Services {
         }
 
         if (matchedZone) {
-            return {
-                insideZone: true,
-                zone: matchedZone
-            };
+            return { insideZone: true, zone: matchedZone };
         }
 
-        // 2️⃣ لو مش داخل أي منطقة، حساب أقرب منطقة
+        // حساب أقرب منطقة
         let closestZone = null;
         let minDistance = Infinity;
 
@@ -142,16 +138,19 @@ class AZ_Services {
             }
         });
 
-        // 3️⃣ إرسال request لـ Gemini AI
+        // طلب AI
         let aiSuggestion = { message: "AI not available" };
         try {
             if (GEMINI_API_KEY) {
                 const prompt = `Suggest the best availability zone for latitude: ${lat}, longitude: ${lng}. Zones: ${zones.map(z => z.name).join(", ")}`;
-                const response = await fetch("https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=" + GEMINI_API_KEY, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt })
-                });
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=${GEMINI_API_KEY}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ prompt })
+                    }
+                );
                 const data = await response.json();
                 aiSuggestion.message = data.candidates?.[0]?.content || "No AI suggestion available";
             }
