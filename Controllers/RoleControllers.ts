@@ -157,10 +157,16 @@ class RoleControllers {
             const { excludedId } = req.params;
             const roles = await RoleServices.getArabicRoles(excludedId);
 
+            // Map only arabic_description
+            const arabicRoles = roles.map(role => ({
+                _id: role._id,
+                arabic_description: role.arabic_description
+            }));
+
             return res.status(200).json({
                 status: 200,
                 message: "Arabic roles retrieved successfully",
-                data: roles,
+                data: arabicRoles,
             });
         } catch (error: unknown) {
             return res.status(500).json({
@@ -170,16 +176,22 @@ class RoleControllers {
         }
     }
 
-    // Get roles with English description, excluding a specific ID
+    // Get roles with English description only
     async getEnglishRoles(req: Request<{ excludedId: string }>, res: Response): Promise<Response> {
         try {
             const { excludedId } = req.params;
             const roles = await RoleServices.getEnglishRoles(excludedId);
 
+            // Map only english_description
+            const englishRoles = roles.map(role => ({
+                _id: role._id,
+                english_description: role.english_description
+            }));
+
             return res.status(200).json({
                 status: 200,
                 message: "English roles retrieved successfully",
-                data: roles,
+                data: englishRoles,
             });
         } catch (error: unknown) {
             return res.status(500).json({
