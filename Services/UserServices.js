@@ -9,7 +9,7 @@ class UserServices{
 
         try {
 
-            const {username,phoneNumber,Password}= userData;
+            const {username,phoneNumber,password}= userData;
 
             // Check if User exists
             const existUser = await UserSchema.findOne({
@@ -24,7 +24,7 @@ class UserServices{
             }
 
             // Hash Password
-            const hashedPassword = await bcrypt.hash(Password, 10);
+            const hashedPassword = await bcrypt.hash(password, 10);
 
             // Create new User
             const newUser = await UserSchema.create({
