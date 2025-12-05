@@ -106,8 +106,8 @@ class AZ_Services {
         const { lat, lng } = point;
         const zones = await AZ_Schema.find({ status: "active" });
 
+        // 1️⃣ تحقق إذا داخل أي منطقة
         let matchedZone = null;
-
         for (const zone of zones) {
             const polygonPoints = zone.polygon.map(p => [p.lat, p.lng]);
             if (inside([lat, lng], polygonPoints)) {
@@ -116,36 +116,55 @@ class AZ_Services {
             }
         }
 
-        if (!matchedZone) {
-            // حساب أقرب منطقة
-            let closestZone = null;
-            let minDistance = Infinity;
-
-            zones.forEach(zone => {
-                const avgLat = zone.polygon.reduce((sum, p) => sum + p.lat, 0) / zone.polygon.length;
-                const avgLng = zone.polygon.reduce((sum, p) => sum + p.lng, 0) / zone.polygon.length;
-                const distance = getDistance(
-                    { latitude: lat, longitude: lng },
-                    { latitude: avgLat, longitude: avgLng }
-                );
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestZone = zone;
-                }
-            });
-
-            // استخدام AI لاقتراح المنطقة
-            const aiSuggestion = await this.getAISuggestion(lat, lng, closestZone);
-
+        if (matchedZone) {
             return {
-                insideZone: false,
-                suggestedZone: closestZone ? closestZone.name : null,
-                distanceToSuggestedZone_m: minDistance,
-                aiSuggestion
+                insideZone: true,
+                zone: matchedZone
             };
         }
 
-        return { insideZone: true, zone: matchedZone };
+        // 2️⃣ لو مش داخل أي منطقة، حساب أقرب منطقة
+        let closestZone = null;
+        let minDistance = Infinity;
+
+        zones.forEach(zone => {
+            const avgLat = zone.polygon.reduce((sum, p) => sum + p.lat, 0) / zone.polygon.length;
+            const avgLng = zone.polygon.reduce((sum, p) => sum + p.lng, 0) / zone.polygon.length;
+
+            const distance = getDistance(
+                { latitude: lat, longitude: lng },
+                { latitude: avgLat, longitude: avgLng }
+            );
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestZone = zone;
+            }
+        });
+
+        // 3️⃣ إرسال request لـ Gemini AI
+        let aiSuggestion = { message: "AI not available" };
+        try {
+            if (GEMINI_API_KEY) {
+                const prompt = `Suggest the best availability zone for latitude: ${lat}, longitude: ${lng}. Zones: ${zones.map(z => z.name).join(", ")}`;
+                const response = await fetch("https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=" + GEMINI_API_KEY, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await response.json();
+                aiSuggestion.message = data.candidates?.[0]?.content || "No AI suggestion available";
+            }
+        } catch (err) {
+            aiSuggestion.message = "AI error: " + (err.message || "Unknown");
+        }
+
+        return {
+            insideZone: false,
+            suggestedZone: closestZone ? closestZone.name : null,
+            distanceToSuggestedZone_m: minDistance,
+            aiSuggestion
+        };
     }
 
     // AI SUGGESTION USING GOOGLE GEMINI
