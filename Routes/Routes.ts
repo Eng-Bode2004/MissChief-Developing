@@ -23,5 +23,11 @@ router.patch("/:id/english", RoleControllers.updateRoleEnglishDescription);
 
 router.delete("/:id", RoleControllers.deleteRoleById);
 
+router.get("/except/:excludedId", RoleControllers.getRolesExcept);
+
+router.get("/arabic", RoleControllers.getArabicRoles);
+
+router.get("/english", RoleControllers.getEnglishRoles);
+
 export default router;
 

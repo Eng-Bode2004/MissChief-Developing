@@ -132,6 +132,57 @@ class RoleControllers {
             });
         }
     }
+
+    async getRolesExcept(req: Request, res: Response): Promise<Response> {
+        try {
+            const { excludedId } = req.params;
+            const roles = await RoleServices.getRolesExcept(excludedId);
+            return res.status(200).json({
+                status: 200,
+                message: "Roles retrieved successfully",
+                data: roles,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                message: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
+
+    // Get roles with Arabic description
+    async getArabicRoles(req: Request, res: Response): Promise<Response> {
+        try {
+            const roles = await RoleServices.getArabicRoles();
+            return res.status(200).json({
+                status: 200,
+                message: "Arabic roles retrieved successfully",
+                data: roles,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                message: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
+
+    // Get roles with English description
+    async getEnglishRoles(req: Request, res: Response): Promise<Response> {
+        try {
+            const roles = await RoleServices.getEnglishRoles();
+            return res.status(200).json({
+                status: 200,
+                message: "English roles retrieved successfully",
+                data: roles,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                status: 500,
+                message: error instanceof Error ? error.message : "Unknown error",
+            });
+        }
+    }
 }
 
 export default new RoleControllers();

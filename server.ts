@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api/v1/roles", RoleRoutes);
+app.use("/api/v1/bun/roles", RoleRoutes);
 
 // Start Server
 const PORT = process.env.PORT;
