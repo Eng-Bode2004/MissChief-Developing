@@ -108,6 +108,32 @@ class AZ_Controllers {
         }
     }
 
+    async checkLocation(req: Request, res: Response): Promise<Response> {
+        try {
+            const { lat, lng } = req.body;
+
+            if (lat == null || lng == null) {
+                return res.status(400).json({
+                    status: "error",
+                    message: "Latitude and longitude are required"
+                });
+            }
+
+            const result = await AZ_Services.checkLocation({ lat, lng });
+
+            return res.status(200).json({
+                status: "success",
+                response: result
+            });
+
+        } catch (error) {
+            return res.status(500).json({
+                status: "error",
+                message: error instanceof Error ? error.message : "Unknown error"
+            });
+        }
+    }
+
 }
 
 export default new AZ_Controllers();

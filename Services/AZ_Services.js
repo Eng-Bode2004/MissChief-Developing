@@ -94,6 +94,55 @@ class AZ_Services {
         return zone;
     }
 
+    // =========================================================
+    // CHECK IF A POINT IS INSIDE ANY ZONE
+    // =========================================================
+
+    async checkLocation(point) {
+        const { lat, lng } = point;
+        const zones = await AZ_Schema.find({ status: "active" });
+
+        let matchedZone = null;
+
+        for (const zone of zones) {
+            const polygonPoints = zone.polygon.map(p => [p.lat, p.lng]);
+            if (inside([lat, lng], polygonPoints)) {
+                matchedZone = zone;
+                break;
+            }
+        }
+
+        if (!matchedZone) {
+            let closestZone = null;
+            let minDistance = Infinity;
+
+            zones.forEach(zone => {
+                const avgLat = zone.polygon.reduce((sum, p) => sum + p.lat, 0) / zone.polygon.length;
+                const avgLng = zone.polygon.reduce((sum, p) => sum + p.lng, 0) / zone.polygon.length;
+
+                const distance = getDistance(
+                    { latitude: lat, longitude: lng },
+                    { latitude: avgLat, longitude: avgLng }
+                );
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestZone = zone;
+                }
+            });
+
+            return {
+                insideZone: false,
+                suggestedZone: closestZone ? closestZone.name : null,
+                distanceToSuggestedZone_m: minDistance
+            };
+        }
+
+        return {
+            insideZone: true,
+            zone: matchedZone
+        };
+    }
 
 }
 

@@ -25,4 +25,7 @@ router.delete('/:id', AZ_Controllers.deleteZone);
 // Toggle zone active/inactive
 router.patch('/:id/toggle', AZ_Controllers.toggleZoneStatus);
 
+router.post("/check-location", AZ_Controllers.checkLocation);
+
+
 export default router;
