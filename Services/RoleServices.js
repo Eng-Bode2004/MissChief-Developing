@@ -110,29 +110,24 @@ class RoleServices {
         }
     }
 
-    // Get roles with Arabic description, optionally exclude ID
     async getArabicRoles(excludedId) {
         try {
-            const filter = {
-                arabic_description: { $exists: true, $ne: "" }
-            };
+            const filter = { arabic_description: { $exists: true, $ne: "" } };
             if (excludedId) filter._id = { $ne: excludedId };
 
-            return await RoleSchema.find(filter);
+            return await RoleSchema.find(filter).select("-english_description");
         } catch (error) {
             throw new Error(error.message || "Something went wrong");
         }
     }
 
-    // Get roles with English description, optionally exclude ID
+    // Get English roles only, optionally exclude ID, exclude Arabic description
     async getEnglishRoles(excludedId) {
         try {
-            const filter = {
-                english_description: { $exists: true, $ne: "" }
-            };
+            const filter = { english_description: { $exists: true, $ne: "" } };
             if (excludedId) filter._id = { $ne: excludedId };
 
-            return await RoleSchema.find(filter);
+            return await RoleSchema.find(filter).select("-arabic_description");
         } catch (error) {
             throw new Error(error.message || "Something went wrong");
         }
