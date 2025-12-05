@@ -106,29 +106,35 @@ class RoleServices {
         try {
             return await RoleSchema.find({ _id: { $ne: excludedId } });
         } catch (error) {
-            throw new Error(error instanceof Error ? error.message : "Something went wrong");
+            throw new Error(error.message || "Something went wrong");
         }
     }
 
-    // Get roles with Arabic description
-    async getArabicRoles() {
+    // Get roles with Arabic description, optionally exclude ID
+    async getArabicRoles(excludedId) {
         try {
-            return await RoleSchema.find({
+            const filter = {
                 arabic_description: { $exists: true, $ne: "" }
-            });
+            };
+            if (excludedId) filter._id = { $ne: excludedId };
+
+            return await RoleSchema.find(filter);
         } catch (error) {
-            throw new Error(error instanceof Error ? error.message : "Something went wrong");
+            throw new Error(error.message || "Something went wrong");
         }
     }
 
-    // Get roles with English description
-    async getEnglishRoles() {
+    // Get roles with English description, optionally exclude ID
+    async getEnglishRoles(excludedId) {
         try {
-            return await RoleSchema.find({
+            const filter = {
                 english_description: { $exists: true, $ne: "" }
-            });
+            };
+            if (excludedId) filter._id = { $ne: excludedId };
+
+            return await RoleSchema.find(filter);
         } catch (error) {
-            throw new Error(error instanceof Error ? error.message : "Something went wrong");
+            throw new Error(error.message || "Something went wrong");
         }
     }
 }

@@ -133,53 +133,58 @@ class RoleControllers {
         }
     }
 
-    async getRolesExcept(req: Request, res: Response): Promise<Response> {
+    async getRolesExcept(req: Request<{ excludedId: string }>, res: Response): Promise<Response> {
         try {
             const { excludedId } = req.params;
             const roles = await RoleServices.getRolesExcept(excludedId);
+
             return res.status(200).json({
                 status: 200,
                 message: "Roles retrieved successfully",
                 data: roles,
             });
-        } catch (error) {
+        } catch (error: unknown) {
             return res.status(500).json({
                 status: 500,
-                message: error instanceof Error ? error.message : "Unknown error",
+                message: error instanceof Error ? error.message : "Something went wrong",
             });
         }
     }
 
-    // Get roles with Arabic description
-    async getArabicRoles(req: Request, res: Response): Promise<Response> {
+    // Get roles with Arabic description, excluding a specific ID
+    async getArabicRoles(req: Request<{ excludedId: string }>, res: Response): Promise<Response> {
         try {
-            const roles = await RoleServices.getArabicRoles();
+            const { excludedId } = req.params;
+            const roles = await RoleServices.getArabicRoles(excludedId);
+
             return res.status(200).json({
                 status: 200,
                 message: "Arabic roles retrieved successfully",
                 data: roles,
             });
-        } catch (error) {
+        } catch (error: unknown) {
             return res.status(500).json({
                 status: 500,
-                message: error instanceof Error ? error.message : "Unknown error",
+                message: error instanceof Error ? error.message : "Something went wrong",
             });
         }
     }
 
-    // Get roles with English description
-    async getEnglishRoles(req: Request, res: Response): Promise<Response> {
+    // Get roles with English description, excluding a specific ID
+    async getEnglishRoles(req: Request<{ excludedId: string }>, res: Response): Promise<Response> {
         try {
-            const roles = await RoleServices.getEnglishRoles();
+            const { excludedId } = req.params;
+            const roles = await RoleServices.getEnglishRoles(excludedId);
+
             return res.status(200).json({
                 status: 200,
                 message: "English roles retrieved successfully",
                 data: roles,
             });
-        } catch (error) {
+        } catch (error: unknown) {
             return res.status(500).json({
                 status: 500,
-                message: error instanceof Error ? error.message : "Unknown error",
+                message: error instanceof Error ? error.message : "Something went wrong",
             });
         }
     }
