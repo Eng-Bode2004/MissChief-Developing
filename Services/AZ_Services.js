@@ -138,69 +138,13 @@ class AZ_Services {
             }
         });
 
-        // طلب AI
-        let aiSuggestion = { message: "AI not available" };
-        try {
-            if (GEMINI_API_KEY) {
-                const prompt = `Suggest the best availability zone for latitude: ${lat}, longitude: ${lng}. Zones: ${zones.map(z => z.name).join(", ")}`;
-                const response = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText?key=${GEMINI_API_KEY}`,
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ prompt })
-                    }
-                );
-                const data = await response.json();
-                aiSuggestion.message = data.candidates?.[0]?.content || "No AI suggestion available";
-            }
-        } catch (err) {
-            aiSuggestion.message = "AI error: " + (err.message || "Unknown");
-        }
-
         return {
             insideZone: false,
             suggestedZone: closestZone ? closestZone.name : null,
             distanceToSuggestedZone_m: minDistance,
-            aiSuggestion
         };
     }
 
-    // AI SUGGESTION USING GOOGLE GEMINI
-    async getAISuggestion(lat, lng, closestZone) {
-        try {
-            const prompt = `
-            User location: lat=${lat}, lng=${lng}
-            Closest available zone: ${closestZone ? closestZone.name : "None"}
-            Suggest the best available zone for delivery and provide latitude and longitude. 
-            Format response as JSON with keys: suggestedZone, suggestedLat, suggestedLng, reason.
-            `;
-
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    prompt,
-                    temperature: 0.2,
-                    max_output_tokens: 300
-                })
-            });
-
-            const data = await response.json();
-            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                const aiText = data.candidates[0].content;
-                try {
-                    return JSON.parse(aiText);
-                } catch (e) {
-                    return { message: aiText }; // fallback
-                }
-            }
-            return { message: "No suggestion from AI" };
-        } catch (error) {
-            console.error("AI suggestion error:", error.message);
-            return { message: "AI error" };
-        }
-    }
 
 }
 
