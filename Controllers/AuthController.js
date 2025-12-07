@@ -28,7 +28,7 @@ class AuthController {
 
     async logout(req, res) {
         try {
-            const { userId } = req.body;
+            const { userId }  = req.params;
 
             if (!userId) {
                 return res.status(400).json({

@@ -19,7 +19,7 @@ router.put('/:userId/assign-profile',AssigningProfile,UserControllers.AssignProf
 router.post("/login", AuthController.login);
 
 // Logout
-router.post("/logout", AuthController.logout);
+router.post("/logout/:userId", AuthController.logout);
 
 
 
