@@ -13,7 +13,7 @@ const router = express.Router();
                                         // Routes
 router.post('/register', RegisterUser,UserControllers.createUser);
 router.put('/:userId/assign-role',AssigningRole,UserControllers.AssignRole);
-
+router.put('/:userId/assign-profile',UserControllers.AssignProfile);
 
 
 

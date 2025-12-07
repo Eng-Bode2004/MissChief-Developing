@@ -60,6 +60,37 @@ class UserControllers {
     }
 
 
+    async AssignProfile(req:Request, res: Response) {
+        try {
+            const { ProfileId } = req.body;
+            const { userId } = req.params;
+
+            const UserProfile = await UserServices.AssignProfile(userId, ProfileId);
+
+            res.status(200).json({
+                status: "success",
+                message: "Role assigned successfully",
+                data: UserProfile
+            });
+        } catch (error: unknown ) {
+
+            if (error instanceof Error) {
+                res.status(400).json({
+                    message: error.message,
+                    status: 400
+                });
+            } else {
+                res.status(400).json({
+                    message: "Unknown error occurred",
+                    status: 400
+                });
+            }
+
+
+        }
+    }
+
+
 
 }
 

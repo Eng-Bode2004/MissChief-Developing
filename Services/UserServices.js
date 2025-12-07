@@ -69,6 +69,30 @@ class UserServices{
 
     }
 
+    async AssignProfile(userId,ProfileId){
+        try {
+
+            // Check if User is its doesnt exists
+            const existUser =  await UserSchema.findById(userId);
+            if (!existUser) {
+                throw new Error('User not found');
+            }
+
+            // Assign Role
+            const userProfile = await UserSchema.findByIdAndUpdate(userId,{
+                $set: {Profile: ProfileId}
+
+
+            },{ new: true })
+
+            return userProfile;
+
+        }catch (error) {
+            throw new Error(error.message || 'Error while assigning role');
+        }
+
+    }
+
 
 
 
