@@ -1,17 +1,11 @@
-import UserSchema, { IUser } from "../Models/UserSchema.ts"; // assuming you export IUser interface from your model
+import UserSchema from "../Models/UserSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-interface AuthTokens {
-    accessToken: string;
-    refreshToken: string;
-    user: Partial<IUser>;
-}
 
 class AuthServices {
 
     // Generate JWT Access Token
-    generateAccessToken(user: IUser): string {
+    generateAccessToken(user) {
         return jwt.sign(
             {
                 userId: user._id,
@@ -22,24 +16,24 @@ class AuthServices {
                 Role: user.Role,
                 language: user.language
             },
-            process.env.JWT_ACCESS_SECRET!,
-            { expiresIn: "15m" }
-    );
+            process.env.JWT_ACCESS_SECRET,
+            { expiresIn: "15m" } // Access token valid for 15 min
+        );
     }
 
     // Generate JWT Refresh Token
-    generateRefreshToken(user: IUser): string {
+    generateRefreshToken(user) {
         return jwt.sign(
             { userId: user._id },
-            process.env.JWT_REFRESH_SECRET!,
-            { expiresIn: "7d" }
-    );
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: "7d" } // Refresh token valid for 7 days
+        );
     }
 
     // User login
-    async login(phoneNumber: string, password: string): Promise<AuthTokens> {
+    async login(phoneNumber, password) {
         // Find user by phoneNumber and populate references
-        const user = await UserSchema.findOne({ phoneNumber }).populate("Profile Role") as IUser | null;
+        const user = await UserSchema.findOne({ phoneNumber }).populate("Profile Role");
 
         if (!user) {
             throw new Error("User not found");
