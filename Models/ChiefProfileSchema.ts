@@ -9,6 +9,7 @@ const ChiefProfileSchema = new mongoose.Schema({
 
     name: {
         type: String,
+        required: true
     },
 
     Max_orders_per_Day: {
