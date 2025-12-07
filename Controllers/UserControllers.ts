@@ -69,7 +69,7 @@ class UserControllers {
 
             res.status(200).json({
                 status: "success",
-                message: "Role assigned successfully",
+                message: "Profile assigned successfully",
                 data: UserProfile
             });
         } catch (error: unknown ) {
