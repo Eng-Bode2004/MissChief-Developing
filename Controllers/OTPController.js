@@ -4,11 +4,10 @@ class OTPController {
 
     async send(req, res) {
         try {
-            const { userId, phone, delivery_method } = req.body;
+            const { userId, delivery_method } = req.body;
 
             const result = await OTPServices.sendOtp(
                 userId,
-                phone,
                 delivery_method || "sms"
             );
 

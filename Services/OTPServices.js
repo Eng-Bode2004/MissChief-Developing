@@ -9,16 +9,30 @@ const client = twilio(
 
 class OTPServices {
 
-    // Generate random 6-digit code
     generateOtpCode() {
         return Math.floor(100000 + Math.random() * 900000);
     }
 
-    // Send OTP (SMS / WhatsApp / Email)
-    async sendOtp(userId, phone, delivery_method = "sms") {
+    // Convert Egyptian numbers to +20 format
+    formatPhoneNumber(phone) {
+        let p = phone.replace(/\s|-/g, ""); // remove spaces/dashes
+
+        if (p.startsWith("0")) p = p.substring(1);   // remove leading 0
+        if (!p.startsWith("+")) p = "+20" + p;       // add +20
+
+        return p;
+    }
+
+    // Send OTP
+    async sendOtp(userId, delivery_method = "sms") {
+
+        const user = await User.findById(userId);
+        if (!user) throw new Error("User not found");
+
+        let phone = this.formatPhoneNumber(user.phoneNumber);
 
         const otpCode = this.generateOtpCode();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
         const newOtp = await OTP.create({
             User_ID: userId,
@@ -30,7 +44,6 @@ class OTPServices {
             expires_at: expiresAt
         });
 
-        // SMS
         if (delivery_method === "sms") {
             await client.messages.create({
                 body: `Your verification code is: ${otpCode}`,
@@ -58,11 +71,9 @@ class OTPServices {
         if (!otp) throw new Error("Invalid OTP");
         if (otp.expires_at < new Date()) throw new Error("OTP expired");
 
-        // Mark OTP used
         otp.is_used = true;
         await otp.save();
 
-        // Mark user verified
         await User.findByIdAndUpdate(userId, {
             isPhoneVerified: true,
         });
@@ -80,12 +91,10 @@ class OTPServices {
 
         return this.sendOtp(
             userId,
-            lastOtp.Phone,
             lastOtp.delivery_method || "sms"
         );
     }
 
-    // Clean expired OTPs manually
     async cleanExpiredOtps() {
         return OTP.deleteMany({
             expires_at: { $lt: new Date() }
