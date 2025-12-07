@@ -4,23 +4,15 @@ class OTPController {
 
     async send(req, res) {
         try {
-            const { userId, delivery_method } = req.body;
+            const { userId } = req.body;
 
-            const result = await OTPServices.sendOtp(
-                userId,
-                delivery_method || "sms"
-            );
+            if (!userId) return res.status(400).json({ status: "error", message: "userId is required" });
 
-            res.status(200).json({
-                status: "success",
-                ...result
-            });
+            const result = await OTPServices.sendOtp(userId);
 
+            res.status(200).json({ status: "success", ...result });
         } catch (error) {
-            res.status(500).json({
-                status: "error",
-                message: error.message
-            });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
@@ -28,18 +20,13 @@ class OTPController {
         try {
             const { userId, otp_code } = req.body;
 
+            if (!userId || !otp_code) return res.status(400).json({ status: "error", message: "userId and otp_code required" });
+
             const result = await OTPServices.verifyOtp(userId, otp_code);
 
-            res.status(200).json({
-                status: "success",
-                ...result
-            });
-
+            res.status(200).json({ status: "success", ...result });
         } catch (error) {
-            res.status(400).json({
-                status: "error",
-                message: error.message
-            });
+            res.status(400).json({ status: "error", message: error.message });
         }
     }
 
@@ -47,18 +34,13 @@ class OTPController {
         try {
             const { userId } = req.body;
 
+            if (!userId) return res.status(400).json({ status: "error", message: "userId is required" });
+
             const result = await OTPServices.resendOtp(userId);
 
-            res.status(200).json({
-                status: "success",
-                ...result
-            });
-
+            res.status(200).json({ status: "success", ...result });
         } catch (error) {
-            res.status(500).json({
-                status: "error",
-                message: error.message
-            });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
@@ -66,16 +48,9 @@ class OTPController {
         try {
             const result = await OTPServices.cleanExpiredOtps();
 
-            res.status(200).json({
-                status: "success",
-                deleted: result.deletedCount
-            });
-
+            res.status(200).json({ status: "success", deleted: result.deletedCount });
         } catch (error) {
-            res.status(500).json({
-                status: "error",
-                message: error.message
-            });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 }
