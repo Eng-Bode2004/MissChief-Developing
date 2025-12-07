@@ -1,21 +1,18 @@
-import type { Request, Response } from "express";
 import SpecialityServices from "../Services/SpecialityServices.js";
 
 class SpecialityController {
 
-    // Create Speciality
-    async createSpeciality(req: Request, res: Response) {
+    // Create a new Speciality
+    async createSpeciality(req, res) {
         try {
             const data = req.body;
             const speciality = await SpecialityServices.createSpeciality(data);
-
             return res.status(201).json({
                 status: 201,
                 message: "Speciality created successfully",
                 data: speciality
             });
-
-        } catch (error: any) {
+        } catch (error) {
             return res.status(400).json({
                 status: 400,
                 message: error.message || "Unknown error"
@@ -23,18 +20,16 @@ class SpecialityController {
         }
     }
 
-    // Get All Specialities
-    async getAllSpecialities(req: Request, res: Response) {
+    // Get all Specialities
+    async getAllSpecialities(req, res) {
         try {
             const specialities = await SpecialityServices.getAllSpecialities();
-
             return res.status(200).json({
                 status: 200,
                 message: "All specialities retrieved successfully",
                 data: specialities
             });
-
-        } catch (error: any) {
+        } catch (error) {
             return res.status(500).json({
                 status: 500,
                 message: error.message || "Unknown error"
@@ -42,149 +37,115 @@ class SpecialityController {
         }
     }
 
-    // Get Speciality By ID
-    async getSpecialityById(req: Request, res: Response) {
+    // Get Speciality by ID
+    async getSpecialityById(req, res) {
         try {
             const { id } = req.params;
             const speciality = await SpecialityServices.getSpecialityById(id);
-
-            if (!speciality) {
-                return res.status(404).json({
-                    status: 404,
-                    message: "Speciality not found"
-                });
-            }
+            if (!speciality) return res.status(404).json({ status: 404, message: "Speciality not found" });
 
             return res.status(200).json({
                 status: 200,
                 message: "Speciality retrieved successfully",
                 data: speciality
             });
-
-        } catch (error: any) {
-            return res.status(500).json({
-                status: 500,
-                message: error.message || "Unknown error"
-            });
-        }
-    }
-
-    // Delete Speciality By ID
-    async deleteSpecialityById(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const deleted = await SpecialityServices.deleteSpecialityById(id);
-
-            if (!deleted) {
-                return res.status(404).json({
-                    status: 404,
-                    message: "Speciality not found"
-                });
-            }
-
-            return res.status(200).json({
-                status: 200,
-                message: "Speciality deleted successfully"
-            });
-
-        } catch (error: any) {
-            return res.status(500).json({
-                status: 500,
-                message: error.message || "Unknown error"
-            });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: error.message || "Unknown error" });
         }
     }
 
     // Update Speciality
-    async updateSpeciality(req: Request, res: Response) {
+    async updateSpeciality(req, res) {
         try {
             const { id } = req.params;
             const data = req.body;
             const updated = await SpecialityServices.updateSpeciality(id, data);
-
-            if (!updated) {
-                return res.status(404).json({
-                    status: 404,
-                    message: "Speciality not found"
-                });
-            }
 
             return res.status(200).json({
                 status: 200,
                 message: "Speciality updated successfully",
                 data: updated
             });
-
-        } catch (error: any) {
-            return res.status(400).json({
-                status: 400,
-                message: error.message || "Unknown error"
-            });
+        } catch (error) {
+            return res.status(400).json({ status: 400, message: error.message || "Unknown error" });
         }
     }
 
-    // Get Chef's Specialities
-    async getChefSpecialities(req: Request, res: Response) {
+    // Delete Speciality
+    async deleteSpecialityById(req, res) {
+        try {
+            const { id } = req.params;
+            await SpecialityServices.deleteSpecialityById(id);
+            return res.status(200).json({ status: 200, message: "Speciality deleted successfully" });
+        } catch (error) {
+            return res.status(404).json({ status: 404, message: error.message || "Speciality not found" });
+        }
+    }
+
+    // Get all Specialities for a chef
+    async getChefSpecialities(req, res) {
         try {
             const { chefId } = req.params;
             const specialities = await SpecialityServices.getChefSpecialities(chefId);
-
             return res.status(200).json({
                 status: 200,
                 message: "Chef specialities retrieved successfully",
                 data: specialities
             });
-
-        } catch (error: any) {
-            return res.status(500).json({
-                status: 500,
-                message: error.message || "Unknown error"
-            });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: error.message || "Unknown error" });
         }
     }
 
-    // Add more subcategories to chef
-    async addMoreSpecialityToChef(req: Request, res: Response) {
+    // Add subcategories to chef's Speciality
+    async addMoreSpecialityToChef(req, res) {
         try {
             const { chefId } = req.params;
-            const { subCategories } = req.body; // array of subCategory IDs
-
+            const { subCategories } = req.body;
             const updated = await SpecialityServices.addMoreSpecialityToChef(chefId, subCategories);
-
             return res.status(200).json({
                 status: 200,
                 message: "Specialities added successfully",
                 data: updated
             });
-
-        } catch (error: any) {
-            return res.status(500).json({
-                status: 500,
-                message: error.message || "Unknown error"
-            });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: error.message || "Unknown error" });
         }
     }
 
-    // Delete a subcategory from chef speciality
-    async deleteSubCategory(req: Request, res: Response) {
+    // Delete subcategory from chef's Speciality
+    async deleteSubCategory(req, res) {
         try {
             const { chefId, subCategoryId } = req.params;
-
             const updated = await SpecialityServices.deleteSubCategory(chefId, subCategoryId);
-
             return res.status(200).json({
                 status: 200,
                 message: "Subcategory removed successfully",
                 data: updated
             });
-
-        } catch (error: any) {
-            return res.status(500).json({
-                status: 500,
-                message: error.message || "Unknown error"
-            });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: error.message || "Unknown error" });
         }
     }
+
+    // Assign a Chef Profile to a Speciality
+    async assignProfile(req, res) {
+        try {
+            const { specialityId, chefProfileId } = req.body;
+            if (!specialityId || !chefProfileId) {
+                return res.status(400).json({ status: 400, message: "specialityId and chefProfileId are required" });
+            }
+            const updatedSpeciality = await SpecialityServices.assignProfileToSpeciality(specialityId, chefProfileId);
+            return res.status(200).json({
+                status: 200,
+                message: "Chef profile assigned successfully",
+                data: updatedSpeciality
+            });
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: error.message || "Unknown error" });
+        }
+    }
+
 }
 
 export default new SpecialityController();
