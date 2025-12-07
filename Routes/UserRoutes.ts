@@ -15,7 +15,11 @@ const router = express.Router();
 router.post('/register', RegisterUser,UserControllers.createUser);
 router.put('/:userId/assign-role',AssigningRole,UserControllers.AssignRole);
 router.put('/:userId/assign-profile',AssigningProfile,UserControllers.AssignProfile);
+// Login using username or phoneNumber
 router.post("/login", AuthController.login);
+
+// Logout
+router.post("/logout", AuthController.logout);
 
 
 

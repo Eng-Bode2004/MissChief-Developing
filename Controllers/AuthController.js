@@ -8,11 +8,36 @@ class AuthController {
             if (!identifier || !password) {
                 return res.status(400).json({
                     status: "error",
-                    message: "Identifier (phoneNumber or username) and password are required"
+                    message: "username or phoneNumber and password are required"
                 });
             }
 
             const result = await AuthServices.login(identifier, password);
+
+            res.status(200).json({
+                status: "success",
+                ...result
+            });
+        } catch (error) {
+            res.status(400).json({
+                status: "error",
+                message: error.message
+            });
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            const { userId } = req.body;
+
+            if (!userId) {
+                return res.status(400).json({
+                    status: "error",
+                    message: "userId is required"
+                });
+            }
+
+            const result = await AuthServices.logout(userId);
 
             res.status(200).json({
                 status: "success",

@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 class AuthServices {
 
-    // Generate JWT Access Token
     generateAccessToken(user) {
         return jwt.sign(
             {
@@ -17,42 +16,38 @@ class AuthServices {
                 language: user.language
             },
             process.env.JWT_ACCESS_SECRET,
-            { expiresIn: "15m" } // Access token valid for 15 min
+            { expiresIn: "15m" }
         );
     }
 
-    // Generate JWT Refresh Token
     generateRefreshToken(user) {
         return jwt.sign(
             { userId: user._id },
             process.env.JWT_REFRESH_SECRET,
-            { expiresIn: "7d" } // Refresh token valid for 7 days
+            { expiresIn: "7d" }
         );
     }
 
-    // User login by phoneNumber or username
     async login(identifier, password) {
-        // Find user by phoneNumber or username
+        // Login by username or phoneNumber
         const user = await UserSchema.findOne({
             $or: [
                 { phoneNumber: identifier },
                 { username: identifier }
             ]
-        }).populate("Profile Role");
+        });
 
-        if (!user) {
-            throw new Error("User not found");
-        }
+        if (!user) throw new Error("User not found");
 
-        // Check password
         const validPassword = await bcrypt.compare(password, user.Password);
-        if (!validPassword) {
-            throw new Error("Invalid password");
-        }
+        if (!validPassword) throw new Error("Invalid password");
 
-        // Generate tokens
         const accessToken = this.generateAccessToken(user);
         const refreshToken = this.generateRefreshToken(user);
+
+        // Save refresh token in DB
+        user.refreshToken = refreshToken;
+        await user.save();
 
         return {
             accessToken,
@@ -66,6 +61,16 @@ class AuthServices {
                 language: user.language
             }
         };
+    }
+
+    async logout(userId) {
+        const user = await UserSchema.findById(userId);
+        if (!user) throw new Error("User not found");
+
+        user.refreshToken = null;
+        await user.save();
+
+        return { message: "Logged out successfully" };
     }
 }
 
