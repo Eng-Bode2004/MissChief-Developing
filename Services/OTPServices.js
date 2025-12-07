@@ -1,8 +1,11 @@
 import OTP from "../Models/OTPSchema.js";
 import User from "../Models/UserSchema.js";
-import twilio from "twilio";
+import { Vonage } from '@vonage/server-sdk';
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
+const vonage = new Vonage({
+    apiKey: process.env.VONAGE_API_KEY,
+    apiSecret: process.env.VONAGE_API_SECRET
+});
 
 class OTPServices {
 
@@ -11,45 +14,39 @@ class OTPServices {
         return Math.floor(100000 + Math.random() * 900000);
     }
 
-    // Send OTP
-    async sendOtp(userId, delivery_method = "sms") {
-        // Fetch user and phone
+    // Send OTP via SMS
+    async sendOtp(userId) {
         const user = await User.findById(userId);
         if (!user) throw new Error("User not found");
-
-        const phone = user.phoneNumber;
-        if (!phone) throw new Error("User phone not found");
+        if (!user.phoneNumber) throw new Error("User phone not found");
 
         const otpCode = this.generateOtpCode();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
         // Save OTP
         const newOtp = await OTP.create({
             User_ID: userId,
-            Phone: phone,
+            Phone: user.phoneNumber,
             otp_code: otpCode,
-            delivery_method,
+            delivery_method: "sms",
             is_used: false,
             created_at: new Date(),
             expires_at: expiresAt
         });
 
-        // Send SMS only if delivery method is sms
-        if (delivery_method === "sms") {
-            try {
-                await client.messages.create({
-                    body: `Your verification code is: ${otpCode}`,
-                    from: process.env.TWILIO_PHONE, // your Twilio verified number
-                    to: phone
-                });
-            } catch (err) {
-                // Catch Twilio errors
-                throw new Error(`Failed to send SMS: ${err.message}`);
-            }
+        // Send via Vonage SMS
+        const from = process.env.VONAGE_SMS_FROM;
+        const to = user.phoneNumber;
+        const text = `Your verification code is: ${otpCode}`;
+
+        try {
+            await vonage.sms.send({ to, from, text });
+        } catch (err) {
+            throw new Error(`Failed to send SMS via Vonage: ${err.message}`);
         }
 
         return {
-            message: "OTP sent successfully",
+            message: "OTP sent successfully via SMS",
             otp_id: newOtp._id,
             expires_at: expiresAt
         };
@@ -79,7 +76,7 @@ class OTPServices {
         const lastOtp = await OTP.findOne({ User_ID: userId }).sort({ created_at: -1 });
         if (!lastOtp) throw new Error("No OTP to resend");
 
-        return this.sendOtp(userId, lastOtp.delivery_method || "sms");
+        return this.sendOtp(userId);
     }
 
     // Cleanup expired OTPs
