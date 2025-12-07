@@ -14,7 +14,7 @@ class OTPServices {
         return Math.floor(100000 + Math.random() * 900000);
     }
 
-    // Send OTP via SMS
+    // Send OTP via Vonage SMS
     async sendOtp(userId) {
         const user = await User.findById(userId);
         if (!user) throw new Error("User not found");
@@ -23,7 +23,7 @@ class OTPServices {
         const otpCode = this.generateOtpCode();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-        // Save OTP
+        // Save OTP to DB
         const newOtp = await OTP.create({
             User_ID: userId,
             Phone: user.phoneNumber,
@@ -34,23 +34,22 @@ class OTPServices {
             expires_at: expiresAt
         });
 
+        // Format phone number for E.164
+        const to = '+2' + user.phoneNumber.replace(/^0/, '');
         const from = process.env.VONAGE_SMS_FROM;
-        const to = '+2' + user.phoneNumber.replace(/^0/, ''); // convert to +2XXXXXXXXXX
         const text = `Your verification code is: ${otpCode}`;
 
+        // Send SMS with proper callback wrapped in Promise
         try {
-            const response = await new Promise((resolve, reject) => {
+            await new Promise((resolve, reject) => {
                 vonage.sms.send({ to, from, text }, (err, responseData) => {
                     if (err) return reject(err);
                     resolve(responseData);
                 });
             });
-            console.log("Vonage response:", response);
         } catch (err) {
             throw new Error(`Failed to send SMS via Vonage: ${err.message}`);
         }
-
-
 
         return {
             message: "OTP sent successfully via SMS",
@@ -66,7 +65,6 @@ class OTPServices {
             otp_code: otpCode,
             is_used: false
         });
-
         if (!otp) throw new Error("Invalid OTP");
         if (otp.expires_at < new Date()) throw new Error("OTP expired");
 
@@ -80,9 +78,6 @@ class OTPServices {
 
     // Resend OTP
     async resendOtp(userId) {
-        const lastOtp = await OTP.findOne({ User_ID: userId }).sort({ created_at: -1 });
-        if (!lastOtp) throw new Error("No OTP to resend");
-
         return this.sendOtp(userId);
     }
 
