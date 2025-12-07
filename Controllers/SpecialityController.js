@@ -131,7 +131,8 @@ class SpecialityController {
     // Assign a Chef Profile to a Speciality
     async assignProfile(req, res) {
         try {
-            const { specialityId, chefProfileId } = req.body;
+            const specialityId = req.params.specialityId;
+            const chefProfileId = req.body;
             if (!specialityId || !chefProfileId) {
                 return res.status(400).json({ status: 400, message: "specialityId and chefProfileId are required" });
             }

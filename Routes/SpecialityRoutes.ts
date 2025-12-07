@@ -28,6 +28,6 @@ router.patch("/chef/:chefId/add", SpecialityController.addMoreSpecialityToChef);
 router.delete("/chef/:chefId/subcategory/:subCategoryId", SpecialityController.deleteSubCategory);
 
 // Assign a chef profile to a speciality
-router.post("/assign-profile", SpecialityController.assignProfile);
+router.post("/assign-profile/:specialityId", SpecialityController.assignProfile);
 
 export default router;
