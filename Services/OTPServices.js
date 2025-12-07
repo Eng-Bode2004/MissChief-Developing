@@ -34,7 +34,6 @@ class OTPServices {
             expires_at: expiresAt
         });
 
-// Send via Vonage SMS (fixed)
         const from = process.env.VONAGE_SMS_FROM;
         const to = '+2' + user.phoneNumber.replace(/^0/, ''); // convert to +2XXXXXXXXXX
         const text = `Your verification code is: ${otpCode}`;
@@ -50,6 +49,7 @@ class OTPServices {
         } catch (err) {
             throw new Error(`Failed to send SMS via Vonage: ${err.message}`);
         }
+
 
 
         return {
