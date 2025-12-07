@@ -5,17 +5,19 @@ class OTPMiddleware {
 
     async validatePhoneForSend(req, res, next) {
         try {
-            const { userId, phone } = req.body;
+            const { userId } = req.body;
 
-            if (!userId || !phone) {
+            // Validate userId
+            if (!userId) {
                 return res.status(400).json({
                     status: "error",
-                    message: "userId and phone are required"
+                    message: "userId is required"
                 });
             }
 
-            // Check user exists
+            // Fetch user
             const user = await User.findById(userId);
+
             if (!user) {
                 return res.status(404).json({
                     status: "error",
@@ -23,21 +25,23 @@ class OTPMiddleware {
                 });
             }
 
-            // Ensure phone matches user registered phone
-            if (user.phoneNumber !== phone) {
+            // Ensure user has phone
+            if (!user.phoneNumber) {
                 return res.status(400).json({
                     status: "error",
-                    message: "Phone number does not match user"
+                    message: "User does not have a phone number registered"
                 });
             }
 
-            // Rate limit: wait 30 sec before requesting another OTP
+            // Attach phone to request (auto insert)
+            req.body.phone = user.phoneNumber;
+
+            // Rate-limit: 1 OTP per 30 seconds
             const lastOtp = await OTP.findOne({ User_ID: userId })
                 .sort({ created_at: -1 });
 
             if (lastOtp) {
-                const secondsPassed =
-                    (Date.now() - lastOtp.created_at) / 1000;
+                const secondsPassed = (Date.now() - lastOtp.created_at) / 1000;
 
                 if (secondsPassed < 30) {
                     return res.status(429).json({
