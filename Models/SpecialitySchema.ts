@@ -5,7 +5,6 @@ const SpecialitySchema = new mongoose.Schema(
         Chef_Profile: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Profile",
-            required: true,
         },
 
         Sub_Categories: [
