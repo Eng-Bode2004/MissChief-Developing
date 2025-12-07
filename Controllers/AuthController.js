@@ -3,16 +3,16 @@ import AuthServices from "../Services/AuthServices.js";
 class AuthController {
     async login(req, res) {
         try {
-            const { phoneNumber, password } = req.body;
+            const { identifier, password } = req.body;
 
-            if (!phoneNumber || !password) {
+            if (!identifier || !password) {
                 return res.status(400).json({
                     status: "error",
-                    message: "phoneNumber and password are required"
+                    message: "Identifier (phoneNumber or username) and password are required"
                 });
             }
 
-            const result = await AuthServices.login(phoneNumber, password);
+            const result = await AuthServices.login(identifier, password);
 
             res.status(200).json({
                 status: "success",

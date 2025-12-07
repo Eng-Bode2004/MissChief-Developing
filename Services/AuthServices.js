@@ -30,10 +30,15 @@ class AuthServices {
         );
     }
 
-    // User login
-    async login(phoneNumber, password) {
-        // Find user by phoneNumber and populate references
-        const user = await UserSchema.findOne({ phoneNumber }).populate("Profile Role");
+    // User login by phoneNumber or username
+    async login(identifier, password) {
+        // Find user by phoneNumber or username
+        const user = await UserSchema.findOne({
+            $or: [
+                { phoneNumber: identifier },
+                { username: identifier }
+            ]
+        }).populate("Profile Role");
 
         if (!user) {
             throw new Error("User not found");
