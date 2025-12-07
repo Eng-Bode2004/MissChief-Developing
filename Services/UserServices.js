@@ -69,29 +69,37 @@ class UserServices{
 
     }
 
-    async AssignProfile(userId,ProfileId){
+    async AssignProfile(userId, ProfileId) {
         try {
-
-            // Check if User is its doesnt exists
-            const existUser =  await UserSchema.findById(userId);
+            // Validate user existence
+            const existUser = await UserSchema.findById(userId);
             if (!existUser) {
-                throw new Error('User not found');
+                throw new Error("User not found");
             }
 
-            // Assign Role
-            const userProfile = await UserSchema.findByIdAndUpdate(userId,{
-                $set: {Profile: ProfileId}
+            // Check if the same profile is already assigned
+            if (existUser.Profile && existUser.Profile.toString() === ProfileId) {
+                throw new Error("This profile is already assigned to the user");
+            }
 
+            // Check if any profile is already assigned
+            if (existUser.Profile) {
+                throw new Error("A profile is already assigned to this user. Cannot assign another.");
+            }
 
-            },{ new: true })
+            // Assign the new profile
+            const userProfile = await UserSchema.findByIdAndUpdate(
+                userId,
+                { $set: { Profile: ProfileId } },
+                { new: true }
+            );
 
             return userProfile;
-
-        }catch (error) {
-            throw new Error(error.message || 'Error while assigning role');
+        } catch (error) {
+            throw new Error(error.message || "Error while assigning profile");
         }
-
     }
+
 
 
 
