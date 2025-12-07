@@ -22,7 +22,7 @@ router.put("/:id", SubCategoryController.updateSubCategory);
 router.get("/english/all", SubCategoryController.getEnglishSubcategories);
 
 // Arabic Sub Categories (exclude Arabic fields)
-router.get("/arabic/all", SubCategoryController.getEnglishSubcategories);
+router.get("/arabic/all", SubCategoryController.getArabicSubcategories);
 
 
 export default router;
