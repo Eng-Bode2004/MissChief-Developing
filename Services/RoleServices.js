@@ -102,14 +102,6 @@ class RoleServices {
         }
     }
 
-    async getRolesExcept(excludedId) {
-        try {
-            return await RoleSchema.find({ _id: { $ne: excludedId } });
-        } catch (error) {
-            throw new Error(error.message || "Something went wrong");
-        }
-    }
-
     async getArabicRoles(excludedId) {
         try {
             const filter = { arabic_description: { $exists: true, $ne: "" } };
