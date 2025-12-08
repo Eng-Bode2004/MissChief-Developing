@@ -6,10 +6,11 @@ import ImagesRoutes from "./Routes/ImagesRoutes.ts";
 const app = express();
 
 // Middleware
-app.use(express.json());
+
 
 // Routes
 app.use("/api/v2/images", ImagesRoutes);
+app.use(express.json());
 
 // Start Server
 const PORT = process.env.PORT;

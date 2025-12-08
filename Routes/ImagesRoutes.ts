@@ -1,7 +1,7 @@
 import { Router } from "express";
 import ImagesControllers from "../Controllers/ImagesControllers.js";
-import Chief_frontID from "../Middleware/Chief-FrontID";
-import Chief_backID from "../Middleware/Chief-BackID";
+import Chief_frontID from "../Middleware/Chief-FrontID.ts";
+import Chief_backID from "../Middleware/Chief-BackID.ts";
 
 const router = Router();
 
