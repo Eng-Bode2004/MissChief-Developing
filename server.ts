@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api/v1/sub-category", SubCategoryRoutes);
+app.use("/api/v2/sub-category", SubCategoryRoutes);
 
 // Start Server
 const PORT = process.env.PORT;
