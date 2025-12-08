@@ -20,7 +20,7 @@ class UserServices{
             });
 
             if (existUser){
-                throw new Error("المستخدم موجود بالفعل!");
+                throw new Error("اسم المستخدم او رقم الهاتف موجود بالفعل!");
             }
 
             // Hash Password
