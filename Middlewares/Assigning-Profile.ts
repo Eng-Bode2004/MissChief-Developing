@@ -46,6 +46,13 @@ export default async function validateAssignProfile(
                 message: "Profile already assigned to this user",
             });
         }
+        // Check if any profile is already assigned
+        if (user.Profile) {
+            return res.status(400).json({
+                status: "error",
+                message: "A profile is already assigned to this user. Cannot assign another.",
+            });
+        }
 
         // Attach to request for controller
         req.ProfileId = ProfileId;

@@ -64,6 +64,8 @@ class AuthServices {
     }
 
     async logout(userId) {
+
+        // Check if user exists
         const user = await UserSchema.findById(userId);
         if (!user) throw new Error("User not found");
 
