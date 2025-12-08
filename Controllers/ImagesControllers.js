@@ -11,9 +11,9 @@ class ImagesControllers{
             }
 
             const imageData = {
-                URL: req.file.secure_url,
-                title: req.body.title ?? req.file.originalname,
-                description: req.body.description ?? ""
+                URL: req.file?.secure_url || req.file?.path,
+                title: req.body?.title || req.file?.originalname || "No-title",
+                description: req.body?.description || ""
             };
 
             const savedImage = await ImageServices.uploadPhoto(imageData);
