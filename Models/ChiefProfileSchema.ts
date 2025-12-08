@@ -19,6 +19,10 @@ const ChiefProfileSchema = new mongoose.Schema({
     Is_Verified: {
         type: Boolean,
         default: false,
+    },
+
+    profile_image:{
+        type: String,
     }
 
 });

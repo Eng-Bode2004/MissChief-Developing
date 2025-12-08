@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api/v1/chief-profile", ChiefProfileRoutes);
+app.use("/api/v2/chief-profile", ChiefProfileRoutes);
 
 // Start Server
 const PORT = process.env.PORT;
