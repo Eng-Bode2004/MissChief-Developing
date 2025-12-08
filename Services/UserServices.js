@@ -20,7 +20,7 @@ class UserServices{
             });
 
             if (existUser){
-                throw new Error("User is already exists!");
+                throw new Error("المستخدم موجود بالفعل!");
             }
 
             // Hash Password
@@ -39,7 +39,7 @@ class UserServices{
 
         } catch (error){
 
-            throw new Error(error.message || "Something went wrong!");
+            throw new Error(error.message || "لقد حدث خطأ ما!");
         }
         
 
@@ -51,7 +51,7 @@ class UserServices{
             // Check if User is its doesn't exist
             const existUser =  await UserSchema.findById(userId);
             if (!existUser) {
-                throw new Error('User not found');
+                throw new Error('لم يتم العثور على المستخدم');
             }
 
             // Assign Role
@@ -64,7 +64,7 @@ class UserServices{
             return userRole;
 
         }catch (error) {
-            throw new Error(error.message || 'Error while assigning role');
+            throw new Error(error.message || 'حدث خطأ أثناء تعيين الدور');
         }
 
     }
@@ -75,7 +75,7 @@ class UserServices{
             // Validate user existence
             const existUser = await UserSchema.findById(userId);
             if (!existUser) {
-                throw new Error("User not found");
+                throw new Error("لم يتم العثور على المستخدم");
             }
 
             // Assign the new profile
@@ -87,7 +87,7 @@ class UserServices{
 
             return userProfile;
         } catch (error) {
-            throw new Error(error.message || "Error while assigning profile");
+            throw new Error(error.message || "حدث خطأ أثناء تعيين الملف الشخصي");
         }
     }
 
