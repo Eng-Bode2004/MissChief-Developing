@@ -9,7 +9,7 @@ class UserControllers {
             const newUser = await UserServices.createUser(userData);
 
             return res.status(201).json({
-                message: "User created successfully",
+                message: "تم إنشاء المستخدم بنجاح",
                 user: newUser,
                 status: 201
             });
@@ -22,7 +22,7 @@ class UserControllers {
                 });
             } else {
                 res.status(400).json({
-                    message: "Unknown error occurred",
+                    message: "حدث خطأ غير معروف",
                     status: 400
                 });
             }
@@ -38,7 +38,7 @@ class UserControllers {
 
             res.status(200).json({
                 status: "success",
-                message: "Role assigned successfully",
+                message: "تم تعيين الدور بنجاح",
                 data: UserRole
             });
         } catch (error: unknown ) {
@@ -50,7 +50,7 @@ class UserControllers {
                 });
             } else {
                 res.status(400).json({
-                    message: "Unknown error occurred",
+                    message: "حدث خطأ غير معروف",
                     status: 400
                 });
             }
@@ -69,7 +69,7 @@ class UserControllers {
 
             res.status(200).json({
                 status: "success",
-                message: "Profile assigned successfully",
+                message: "تم تعيين الملف الشخصي بنجاح",
                 data: UserProfile
             });
         } catch (error: unknown ) {
@@ -81,7 +81,7 @@ class UserControllers {
                 });
             } else {
                 res.status(400).json({
-                    message: "Unknown error occurred",
+                    message: "حدث خطأ غير معروف",
                     status: 400
                 });
             }

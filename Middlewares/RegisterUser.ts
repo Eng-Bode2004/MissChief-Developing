@@ -22,28 +22,28 @@ export default function validateUserRegistration(
     if (!username) {
         return res.status(400).json({
             status: 'error',
-            message: 'Please enter username.',
+            message: 'الرجاء إدخال اسم المستخدم',
         });
     }
 
     if(!phoneNumber) {
         return res.status(400).json({
             status: 'error',
-            message: 'Please enter phone number.',
+            message: 'الرجاء إدخال رقم الهاتف',
         })
     }
 
     if(!password) {
         return res.status(400).json({
             status: 'error',
-            message: 'Please enter password',
+            message: 'الرجاء إدخال كلمة المرور',
         })
     }
 
     if (!confirmPassword) {
         return res.status(400).json({
             status: 'error',
-            message: 'Please enter confirm password',
+            message: 'الرجاء إدخال تأكيد كلمة المرور',
         })
     }
 
@@ -52,7 +52,7 @@ export default function validateUserRegistration(
     if (password !== confirmPassword) {
         return res.status(400).json({
             status: "error",
-            message: "Passwords do not match."
+            message: "كلمات المرور غير متطابقة"
         });
     }
 
@@ -68,25 +68,25 @@ export default function validateUserRegistration(
     if (password.length < passwordPolicy.minLength)
         return res.status(400).json({
             status: "error",
-            message: `Password must be at least ${passwordPolicy.minLength} characters long.`
+            message: ` يجب أن تكون كلمة المرور على الأقل ${passwordPolicy.minLength} أحرف.`
         });
 
     if (!passwordPolicy.hasUpperCase.test(password))
         return res.status(400).json({
             status: "error",
-            message: "Password must contain at least one uppercase letter."
+            message: "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل"
         });
 
     if (!passwordPolicy.hasLowerCase.test(password))
         return res.status(400).json({
             status: "error",
-            message: "Password must contain at least one lowercase letter."
+            message: "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل"
         });
 
     if (!passwordPolicy.hasNumber.test(password))
         return res.status(400).json({
             status: "error",
-            message: "Password must contain at least one number."
+            message: "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل"
         });
 
 
@@ -98,7 +98,7 @@ export default function validateUserRegistration(
     if (!usernameRegex.test(username)) {
         return res.status(400).json({
             status: "error",
-            message: "Username can only contain letters, numbers, underscores, and dots."
+            message: "يجب أن يحتوي اسم المستخدم فقط على أحرف وأرقام وعلامات سفلية ونقاط"
         });
     }
 
@@ -116,7 +116,7 @@ export default function validateUserRegistration(
         if (phoneString.length !== 11) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Phone number must be exactly 11 digits long for Egyptian mobiles.',
+                message: 'يجب أن يتكون رقم الهاتف المحمول المصري من 11 رقمًا بالضبط',
             });
         }
 
@@ -126,7 +126,7 @@ export default function validateUserRegistration(
         if (!egyptianMobileRegex.test(phoneString)) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Invalid Egyptian mobile number. Must start with 010, 011, 012, or 015.',
+                message: 'رقم جوال مصري غير صحيح. يجب أن يبدأ بـ ٠١٠، ٠١١، ٠١٢، أو ٠١٥',
             });
         }
     }
