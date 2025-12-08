@@ -1,0 +1,10 @@
+import { Router } from "express";
+import ImagesControllers from "../Controllers/ImagesControllers.js";
+import Chief_frontID from "../Middleware/Chief-FrontID";
+import Chief_backID from "../Middleware/Chief-BackID";
+
+const router = Router();
+
+router.post("/chief-frontID", Chief_frontID.single("image"), ImagesControllers.uploadPhoto);
+router.post("/chief-backID", Chief_backID.single("image"), ImagesControllers.uploadPhoto);
+export default router;
