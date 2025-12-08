@@ -40,7 +40,7 @@ class AuthServices {
         if (!user) throw new Error("User not found");
 
         const validPassword = await bcrypt.compare(password, user.Password);
-        if (!validPassword) throw new Error("Invalid password");
+        if (!validPassword) throw new Error("Invalid Identifier or password");
 
         const accessToken = this.generateAccessToken(user);
         const refreshToken = this.generateRefreshToken(user);
