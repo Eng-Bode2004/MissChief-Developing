@@ -18,7 +18,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use("/api/v1/national-id", NationalRoutes);
+app.use("/api/v2/national-id", NationalRoutes);
 
 // Start Server
 const PORT = process.env.PORT;
