@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api/v1/speciality", SpecialityRoutes);
+app.use("/api/v2/speciality", SpecialityRoutes);
 
 // Start Server
 const PORT = process.env.PORT;
